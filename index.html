@@ -2,8 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>☕ كوفي شوب - لوحة التحكم</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>☕ كوفي شوب</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -26,9 +26,9 @@
       --amber: #f59e0b;
       --amber-bg: #fef3c7;
       --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.06);
-      --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
-      --radius: 16px;
-      --radius-sm: 10px;
+      --shadow-lg: 0 10px 40px rgba(0,0,0,0.14);
+      --radius: 18px;
+      --radius-sm: 12px;
     }
     [data-theme="dark"] {
       --bg: #0f1117;
@@ -50,22 +50,23 @@
       --amber: #fbbf24;
       --amber-bg: #2d1d00;
       --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.2);
-      --shadow-lg: 0 8px 30px rgba(0,0,0,0.4);
+      --shadow-lg: 0 10px 40px rgba(0,0,0,0.5);
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body {
       font-family: 'Cairo', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      transition: background 0.3s, color 0.3s;
+      min-height: 100dvh;
     }
-    /* NAV */
+
+    /* ── TOP NAV ── */
     .nav {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 0 20px;
-      height: 64px;
+      padding: 0 14px;
+      height: 58px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -77,187 +78,336 @@
     .nav-brand {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 20px;
+      gap: 8px;
+      font-size: 18px;
       font-weight: 800;
       color: var(--primary);
     }
-    .nav-brand span { font-size: 26px; }
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .nav-link {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--text2);
-      padding: 8px 16px;
-      border-radius: var(--radius-sm);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 600;
-      font-family: 'Cairo', sans-serif;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .nav-link:hover { background: var(--primary-bg); color: var(--primary); border-color: var(--primary); }
+    .nav-brand .logo { font-size: 24px; }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
     .theme-btn {
       background: var(--surface2);
       border: 1px solid var(--border);
-      width: 40px;
-      height: 40px;
+      width: 38px; height: 38px;
       border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 17px;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .menu-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 18px;
+      color: var(--text2);
+    }
+
+    /* ── BOTTOM NAV BAR ── */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
       display: flex;
+      z-index: 100;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .bn-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      padding: 10px 4px 8px;
+      gap: 3px;
+      text-decoration: none;
+      color: var(--text3);
       cursor: pointer;
-      font-size: 18px;
-      transition: all 0.2s;
+      transition: color 0.2s;
+      border: none;
+      background: none;
+      font-family: 'Cairo', sans-serif;
     }
-    .theme-btn:hover { background: var(--primary-bg); border-color: var(--primary); }
-    /* MAIN */
-    .main { padding: 24px 20px; max-width: 900px; margin: 0 auto; }
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
+    .bn-item.active { color: var(--primary); }
+    .bn-item .bn-icon { font-size: 22px; line-height: 1; }
+    .bn-item .bn-label { font-size: 11px; font-weight: 700; }
+
+    /* ── MAIN CONTENT ── */
+    .main {
+      padding: 16px 12px 90px; /* bottom pad for nav bar */
+      max-width: 900px;
+      margin: 0 auto;
     }
-    .section-title { font-size: 22px; font-weight: 800; color: var(--text); }
-    .section-sub { font-size: 13px; color: var(--text3); margin-top: 2px; }
-    /* STATS */
+
+    /* ── STATS ── */
     .stats-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 24px;
+      gap: 10px;
+      margin-bottom: 16px;
     }
     .stat-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px 16px;
+      border-radius: var(--radius-sm);
+      padding: 14px 10px;
       text-align: center;
       box-shadow: var(--shadow);
     }
-    .stat-value { font-size: 28px; font-weight: 800; }
-    .stat-label { font-size: 12px; color: var(--text3); margin-top: 4px; font-weight: 600; }
+    .stat-value { font-size: 24px; font-weight: 800; }
+    .stat-label { font-size: 11px; color: var(--text3); margin-top: 3px; font-weight: 600; }
     .stat-card.green .stat-value { color: var(--green); }
     .stat-card.red .stat-value { color: var(--red); }
     .stat-card.primary .stat-value { color: var(--primary); }
-    /* TABLES GRID */
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .section-title { font-size: 17px; font-weight: 800; }
+    .section-sub { font-size: 12px; color: var(--text3); margin-top: 1px; }
+    .pulse {
+      display: inline-block;
+      width: 8px; height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+      margin-left: 4px;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform: scale(1); }
+      50% { opacity:0.5; transform: scale(0.8); }
+    }
+
+    /* ── TABLES GRID ── */
     .tables-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
+      gap: 12px;
     }
-    @media (min-width: 480px) {
-      .tables-grid { grid-template-columns: repeat(3, 1fr); }
-    }
-    @media (min-width: 700px) {
-      .tables-grid { grid-template-columns: repeat(4, 1fr); }
-    }
+    @media (min-width: 480px) { .tables-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 700px) { .tables-grid { grid-template-columns: repeat(4, 1fr); } }
+
     .table-card {
       background: var(--surface);
       border: 2px solid var(--border);
       border-radius: var(--radius);
-      padding: 20px 16px;
+      padding: 0;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 10px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.18s;
       box-shadow: var(--shadow);
       text-decoration: none;
       color: inherit;
       position: relative;
       overflow: hidden;
+      min-height: 140px;
+      user-select: none;
     }
-    .table-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 4px;
+    .table-card:active { transform: scale(0.97); }
+    .table-card.empty { border-color: var(--border); }
+    .table-card.active { border-color: var(--red); }
+
+    /* Top color stripe */
+    .table-stripe {
+      height: 5px;
       background: var(--border);
-      transition: background 0.2s;
+      flex-shrink: 0;
     }
-    .table-card.empty::before { background: var(--green); }
-    .table-card.active::before { background: var(--red); }
-    .table-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
-    .table-card.empty:hover { border-color: var(--green); }
-    .table-card.active:hover { border-color: var(--red); }
-    .table-icon { font-size: 36px; }
-    .table-num { font-size: 16px; font-weight: 800; }
-    .table-status {
-      font-size: 12px;
-      font-weight: 700;
-      padding: 4px 12px;
-      border-radius: 20px;
+    .table-card.empty .table-stripe { background: linear-gradient(90deg, var(--green), #86efac); }
+    .table-card.active .table-stripe { background: linear-gradient(90deg, var(--red), #fca5a5); }
+
+    .table-body {
+      flex: 1;
+      padding: 12px 12px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
-    .table-card.empty .table-status { background: var(--green-bg); color: var(--green-text); }
-    .table-card.active .table-status { background: var(--red-bg); color: var(--red-text); }
-    .table-total {
-      font-size: 14px;
+    .table-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+    .table-num-big {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1;
+    }
+    .table-status-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      margin-top: 4px;
+    }
+    .table-card.empty .table-status-dot { background: var(--green); }
+    .table-card.active .table-status-dot { background: var(--red); animation: pulse 1.5s infinite; }
+
+    .table-customer {
+      font-size: 13px;
       font-weight: 700;
       color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      min-height: 18px;
     }
-    .table-items { font-size: 12px; color: var(--text3); }
-    /* LOADING */
-    .loading { text-align: center; padding: 60px 20px; color: var(--text3); }
+    .table-status-text {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text3);
+    }
+    .table-card.active .table-status-text { color: var(--red-text); }
+    .table-card.empty .table-status-text { color: var(--green-text); }
+
+    .table-footer {
+      background: var(--surface2);
+      border-top: 1px solid var(--border);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .table-total-val {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .table-items-count {
+      font-size: 11px;
+      color: var(--text3);
+      font-weight: 600;
+    }
+    .table-enter-arrow {
+      font-size: 14px;
+      color: var(--text3);
+    }
+
+    /* Edit customer name btn (small pencil) */
+    .edit-name-btn {
+      background: none;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--text3);
+      padding: 0;
+      line-height: 1;
+    }
+
+    /* ── NAME MODAL ── */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .overlay.open { display: flex; }
+    .name-modal {
+      background: var(--surface);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 360px;
+      padding: 24px 20px 20px;
+      box-shadow: var(--shadow-lg);
+      animation: popIn 0.2s ease;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.92); opacity: 0; }
+      to   { transform: scale(1);    opacity: 1; }
+    }
+    .name-modal h3 { font-size: 17px; font-weight: 800; margin-bottom: 6px; }
+    .name-modal p { font-size: 13px; color: var(--text3); margin-bottom: 16px; }
+    .name-input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 16px;
+      color: var(--text);
+      font-family: 'Cairo', sans-serif;
+      direction: rtl;
+      transition: border 0.2s;
+    }
+    .name-input:focus { outline: none; border-color: var(--primary); }
+    .modal-btns { display: flex; gap: 10px; margin-top: 14px; }
+    .modal-btns button {
+      flex: 1;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+      border: none;
+      transition: opacity 0.2s;
+    }
+    .btn-save { background: var(--primary); color: white; }
+    .btn-save:hover { opacity: 0.85; }
+    .btn-cancel { background: var(--surface2); color: var(--text2); border: 1px solid var(--border) !important; }
+    .btn-clear-name { background: var(--red-bg); color: var(--red-text); border: 1px solid var(--red) !important; flex: 0.6 !important; font-size: 13px !important; }
+
+    /* ── LOADING ── */
+    .loading { text-align: center; padding: 50px 20px; color: var(--text3); }
     .spinner {
-      width: 36px; height: 36px;
+      width: 32px; height: 32px;
       border: 3px solid var(--border);
       border-top-color: var(--primary);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
-      margin: 0 auto 12px;
+      margin: 0 auto 10px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    /* TOAST */
+
+    /* ── TOAST ── */
     .toast {
       position: fixed;
-      bottom: 24px;
+      bottom: 80px;
       left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      background: var(--text);
-      color: var(--surface);
-      padding: 12px 24px;
+      transform: translateX(-50%) translateY(40px);
+      background: #1a202c;
+      color: #fff;
+      padding: 11px 22px;
       border-radius: 30px;
       font-size: 14px;
       font-weight: 600;
       z-index: 999;
-      transition: transform 0.3s;
+      opacity: 0;
+      transition: all 0.3s;
+      white-space: nowrap;
     }
-    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    [data-theme="dark"] .toast { background: #f1f5f9; color: #1a202c; }
   </style>
 </head>
 <body>
 
+<!-- TOP NAV -->
 <nav class="nav">
   <div class="nav-brand">
-    <span>☕</span>
-    <div>
-      <div>كوفي شوب</div>
-    </div>
+    <span class="logo">☕</span>
+    <span>كوفي شوب</span>
   </div>
-  <div class="nav-actions">
-    <a href="products.html" class="nav-link">🛍 المنتجات</a>
-    <a href="invoices.html" class="nav-link">🧾 الفواتير</a>
-    <a href="history.html" class="nav-link">📋 السجل</a>
+  <div class="nav-right">
     <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
   </div>
 </nav>
 
+<!-- MAIN -->
 <div class="main">
-  <div class="section-header">
-    <div>
-      <div class="section-title">الطاولات</div>
-      <div class="section-sub" id="lastUpdate">جاري التحديث...</div>
-    </div>
-  </div>
 
+  <!-- Stats -->
   <div class="stats-row">
     <div class="stat-card green">
       <div class="stat-value" id="emptyCount">-</div>
@@ -269,21 +419,65 @@
     </div>
     <div class="stat-card primary">
       <div class="stat-value" id="totalToday">-</div>
-      <div class="stat-label">إجمالي اليوم</div>
+      <div class="stat-label">مبيعات اليوم</div>
     </div>
   </div>
 
+  <!-- Header -->
+  <div class="section-header">
+    <div>
+      <div class="section-title">الطاولات <span class="pulse"></span></div>
+      <div class="section-sub" id="lastUpdate">جاري التحديث...</div>
+    </div>
+  </div>
+
+  <!-- Tables -->
   <div id="tablesGrid" class="tables-grid">
-    <div class="loading">
+    <div class="loading" style="grid-column:1/-1">
       <div class="spinner"></div>
-      <div>جاري تحميل الطاولات...</div>
+      <div>جاري التحميل...</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a href="index.html" class="bn-item active">
+    <div class="bn-icon">🏠</div>
+    <div class="bn-label">الطاولات</div>
+  </a>
+  <a href="products.html" class="bn-item">
+    <div class="bn-icon">🛍</div>
+    <div class="bn-label">المنتجات</div>
+  </a>
+  <a href="invoices.html" class="bn-item">
+    <div class="bn-icon">🧾</div>
+    <div class="bn-label">الفواتير</div>
+  </a>
+  <a href="history.html" class="bn-item">
+    <div class="bn-icon">📋</div>
+    <div class="bn-label">السجل</div>
+  </a>
+</nav>
+
+<!-- Customer Name Modal -->
+<div class="overlay" id="nameOverlay" onclick="closeNameModal(event)">
+  <div class="name-modal" onclick="event.stopPropagation()">
+    <h3 id="nameModalTitle">اسم الزبون</h3>
+    <p id="nameModalSub">طاولة رقم —</p>
+    <input class="name-input" id="nameInput" type="text" placeholder="اكتب اسم الزبون..." maxlength="30"
+      onkeydown="if(event.key==='Enter') saveCustomerName()" />
+    <div class="modal-btns">
+      <button class="btn-save" onclick="saveCustomerName()">✅ حفظ</button>
+      <button class="btn-clear-name" onclick="clearCustomerName()">🗑 مسح</button>
+      <button class="btn-cancel" onclick="closeNameModal()">إلغاء</button>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -301,76 +495,159 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  // Theme
+  /* ── Theme ── */
   function applyTheme(t) {
     document.documentElement.setAttribute('data-theme', t);
     document.getElementById('themeBtn').textContent = t === 'dark' ? '☀️' : '🌙';
   }
-  window.toggleTheme = function() {
+  window.toggleTheme = function () {
     const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     localStorage.setItem('cs_theme', cur);
     applyTheme(cur);
   };
   applyTheme(localStorage.getItem('cs_theme') || 'light');
 
-  const NUM_TABLES = 8;
-  let todayTotal = 0;
+  /* ── Customer names stored in localStorage (temporary, per-session) ── */
+  function getNames() {
+    try { return JSON.parse(localStorage.getItem('cs_customer_names') || '{}'); } catch { return {}; }
+  }
+  function setName(tableId, name) {
+    const names = getNames();
+    if (name) names[tableId] = name; else delete names[tableId];
+    localStorage.setItem('cs_customer_names', JSON.stringify(names));
+  }
 
-  // Load today's invoices total
+  /* ── Name Modal ── */
+  let editingTableId = null;
+  window.openNameModal = function (e, tableId) {
+    e.preventDefault(); e.stopPropagation();
+    editingTableId = tableId;
+    const names = getNames();
+    document.getElementById('nameModalTitle').textContent = `اسم زبون — طاولة ${tableId}`;
+    document.getElementById('nameModalSub').textContent = 'الاسم مؤقت ويُمسح عند الدفع أو التصفير';
+    document.getElementById('nameInput').value = names[tableId] || '';
+    document.getElementById('nameOverlay').classList.add('open');
+    setTimeout(() => document.getElementById('nameInput').focus(), 120);
+  };
+  window.closeNameModal = function (e) {
+    if (e && e.target !== document.getElementById('nameOverlay')) return;
+    document.getElementById('nameOverlay').classList.remove('open');
+    editingTableId = null;
+  };
+  // also allow close without event (from button)
+  window.closeNameModalDirect = function () {
+    document.getElementById('nameOverlay').classList.remove('open');
+    editingTableId = null;
+  };
+  window.saveCustomerName = function () {
+    if (!editingTableId) return;
+    const val = document.getElementById('nameInput').value.trim();
+    setName(editingTableId, val);
+    document.getElementById('nameOverlay').classList.remove('open');
+    editingTableId = null;
+    showToast(val ? `✅ تم حفظ الاسم: ${val}` : '🗑 تم مسح الاسم');
+    renderTables(lastTablesData);
+  };
+  window.clearCustomerName = function () {
+    if (!editingTableId) return;
+    setName(editingTableId, '');
+    document.getElementById('nameInput').value = '';
+    document.getElementById('nameOverlay').classList.remove('open');
+    editingTableId = null;
+    showToast('🗑 تم مسح الاسم');
+    renderTables(lastTablesData);
+  };
+
+  /* ── Firebase ── */
+  const NUM_TABLES = 8;
+  let lastTablesData = {};
+
+  // Today total
   async function loadTodayTotal() {
     const snap = await get(ref(db, 'coffeepos/invoices'));
     if (!snap.exists()) { document.getElementById('totalToday').textContent = '0'; return; }
-    const data = snap.val();
     const today = new Date().toDateString();
     let total = 0;
-    Object.values(data).forEach(inv => {
+    Object.values(snap.val()).forEach(inv => {
       if (new Date(inv.createdAt).toDateString() === today) total += inv.total || 0;
     });
-    todayTotal = total;
-    document.getElementById('totalToday').textContent = total.toLocaleString('ar-IQ');
+    document.getElementById('totalToday').textContent = total >= 1000
+      ? (total / 1000).toFixed(1) + 'k'
+      : total.toLocaleString('ar-IQ');
   }
   loadTodayTotal();
 
-  // Listen to tables
-  onValue(ref(db, 'coffeepos/tables'), (snap) => {
-    const data = snap.val() || {};
-    renderTables(data);
-    const now = new Date();
-    document.getElementById('lastUpdate').textContent = `آخر تحديث: ${now.toLocaleTimeString('ar-IQ')}`;
+  onValue(ref(db, 'coffeepos/tables'), snap => {
+    lastTablesData = snap.val() || {};
+    renderTables(lastTablesData);
+    document.getElementById('lastUpdate').textContent =
+      `آخر تحديث: ${new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}`;
   });
 
   function renderTables(data) {
     const grid = document.getElementById('tablesGrid');
-    let empty = 0, active = 0;
-    let html = '';
+    const names = getNames();
+    let empty = 0, active = 0, html = '';
 
     for (let i = 1; i <= NUM_TABLES; i++) {
       const t = data[`table_${i}`];
       const isActive = t && t.status === 'active';
       if (isActive) active++; else empty++;
 
-      let totalStr = '';
-      let itemCount = 0;
+      let total = 0, itemCount = 0;
       if (isActive && t.orders) {
-        let sum = 0;
-        const items = Object.values(t.orders);
-        itemCount = items.length;
-        items.forEach(o => sum += (o.total || 0));
-        totalStr = `${sum.toLocaleString('ar-IQ')} د.ع`;
+        Object.values(t.orders).forEach(o => { total += o.total || 0; itemCount++; });
       }
+
+      const customerName = names[i] || '';
 
       html += `
         <a href="table.html?id=${i}" class="table-card ${isActive ? 'active' : 'empty'}">
-          <div class="table-icon">${isActive ? '🔴' : '🟢'}</div>
-          <div class="table-num">طاولة ${i}</div>
-          <div class="table-status">${isActive ? 'مشغولة' : 'فارغة'}</div>
-          ${isActive ? `<div class="table-total">${totalStr}</div><div class="table-items">${itemCount} عنصر</div>` : '<div class="table-items">انقر للدخول</div>'}
+          <div class="table-stripe"></div>
+          <div class="table-body">
+            <div class="table-top">
+              <div class="table-num-big">${i}</div>
+              <div class="table-status-dot"></div>
+            </div>
+            <div class="table-customer">
+              ${customerName
+                ? `<span>👤</span><span>${customerName}</span>
+                   <button class="edit-name-btn" onclick="openNameModal(event, ${i})">✏️</button>`
+                : `<button class="edit-name-btn" onclick="openNameModal(event, ${i})" style="font-size:12px;color:var(--text3);font-family:'Cairo',sans-serif;font-weight:600">+ اسم الزبون</button>`
+              }
+            </div>
+            <div class="table-status-text">${isActive ? 'مشغولة' : 'فارغة'}</div>
+          </div>
+          <div class="table-footer">
+            ${isActive
+              ? `<div>
+                   <div class="table-total-val">${total.toLocaleString('ar-IQ')} د.ع</div>
+                   <div class="table-items-count">${itemCount} عنصر</div>
+                 </div>`
+              : `<div class="table-items-count">اضغط للدخول</div>`
+            }
+            <div class="table-enter-arrow">←</div>
+          </div>
         </a>`;
     }
 
     grid.innerHTML = html;
     document.getElementById('emptyCount').textContent = empty;
     document.getElementById('activeCount').textContent = active;
+  }
+
+  // Fix modal close button (called without event)
+  document.querySelector('.btn-cancel').addEventListener('click', () => {
+    document.getElementById('nameOverlay').classList.remove('open');
+    editingTableId = null;
+  });
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 2400);
   }
 </script>
 </body>
