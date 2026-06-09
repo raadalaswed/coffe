@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>☕ الفواتير</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f0f2f5;
+      --surface: #ffffff;
+      --surface2: #f8f9fa;
+      --border: #e2e8f0;
+      --text: #1a202c;
+      --text2: #4a5568;
+      --text3: #718096;
+      --primary: #6f4e37;
+      --primary-bg: #f5ede8;
+      --green: #22c55e;
+      --green-bg: #dcfce7;
+      --green-text: #15803d;
+      --red: #ef4444;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.06);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+    [data-theme="dark"] {
+      --bg: #0f1117; --surface: #1a1d27; --surface2: #22263a;
+      --border: #2d3148; --text: #f1f5f9; --text2: #cbd5e1; --text3: #94a3b8;
+      --primary: #c49a72; --primary-bg: #2a1f15;
+      --green: #4ade80; --green-bg: #052e16; --green-text: #4ade80;
+      --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.2);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    .nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: var(--shadow);
+    }
+    .back-btn {
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text2); padding: 8px 14px; border-radius: var(--radius-sm);
+      text-decoration: none; font-size: 14px; font-weight: 700;
+      cursor: pointer; font-family: 'Cairo', sans-serif; transition: all 0.2s;
+    }
+    .back-btn:hover { background: var(--primary-bg); color: var(--primary); }
+    .nav-title { font-size: 18px; font-weight: 800; color: var(--primary); }
+    .theme-btn {
+      background: var(--surface2); border: 1px solid var(--border);
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 17px; transition: all 0.2s;
+    }
+    .main { padding: 20px 16px; max-width: 700px; margin: 0 auto; }
+    /* Stats */
+    .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 12px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .stat-value { font-size: 22px; font-weight: 800; color: var(--primary); }
+    .stat-label { font-size: 11px; color: var(--text3); font-weight: 600; margin-top: 2px; }
+    /* Filter */
+    .filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .filter-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+      transition: all 0.2s;
+    }
+    .filter-btn.active { background: var(--primary-bg); color: var(--primary); border-color: var(--primary); }
+    .search-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 14px;
+      color: var(--text);
+      font-family: 'Cairo', sans-serif;
+      width: 100%;
+      direction: rtl;
+      margin-bottom: 14px;
+    }
+    .search-bar:focus { outline: none; border-color: var(--primary); }
+    /* Invoice Card */
+    .inv-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s;
+    }
+    .inv-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
+    .inv-icon {
+      width: 46px; height: 46px;
+      background: var(--primary-bg);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .inv-body { flex: 1; }
+    .inv-id { font-size: 15px; font-weight: 800; }
+    .inv-meta { font-size: 12px; color: var(--text3); margin-top: 2px; }
+    .inv-total { font-size: 15px; font-weight: 800; color: var(--primary); text-align: left; }
+    .inv-date-small { font-size: 11px; color: var(--text3); text-align: left; }
+    .loading { text-align: center; padding: 50px; color: var(--text3); }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 10px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty { text-align: center; padding: 50px; color: var(--text3); }
+    .empty .icon { font-size: 44px; margin-bottom: 8px; }
+    .date-group-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text3);
+      padding: 10px 4px 6px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <a href="index.html" class="back-btn">← رجوع</a>
+  <div class="nav-title">🧾 الفواتير</div>
+  <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+</nav>
+
+<div class="main">
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-value" id="totalInvCount">-</div>
+      <div class="stat-label">إجمالي الفواتير</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="todayCount">-</div>
+      <div class="stat-label">فواتير اليوم</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="todayTotal">-</div>
+      <div class="stat-label">مبيعات اليوم</div>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="setFilter('all', this)">الكل</button>
+    <button class="filter-btn" onclick="setFilter('today', this)">اليوم</button>
+    <button class="filter-btn" onclick="setFilter('week', this)">هذا الأسبوع</button>
+  </div>
+
+  <input class="search-bar" id="searchBar" placeholder="🔍 ابحث برقم الفاتورة أو الطاولة..." oninput="applyFilters()" />
+
+  <div id="invList">
+    <div class="loading"><div class="spinner"></div><div>جاري التحميل...</div></div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC7EVNCSl48CQgIC-a8wdC5UG2tKLtNKjQ",
+    authDomain: "garag-system.firebaseapp.com",
+    databaseURL: "https://garag-system-default-rtdb.firebaseio.com",
+    projectId: "garag-system",
+    storageBucket: "garag-system.firebasestorage.app",
+    messagingSenderId: "330947022055",
+    appId: "1:330947022055:web:d0c9d378e200c7de45a642"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    document.getElementById('themeBtn').textContent = t === 'dark' ? '☀️' : '🌙';
+  }
+  window.toggleTheme = function() {
+    const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('cs_theme', cur);
+    applyTheme(cur);
+  };
+  applyTheme(localStorage.getItem('cs_theme') || 'light');
+
+  let allInvoices = [];
+  let currentFilter = 'all';
+
+  onValue(ref(db, 'coffeepos/invoices'), snap => {
+    allInvoices = [];
+    if (snap.exists()) {
+      Object.entries(snap.val()).forEach(([id, inv]) => allInvoices.push({ ...inv, invoiceId: id }));
+      allInvoices.sort((a, b) => b.createdAt - a.createdAt);
+    }
+    updateStats();
+    applyFilters();
+  });
+
+  function updateStats() {
+    const today = new Date().toDateString();
+    const todayInvs = allInvoices.filter(i => new Date(i.createdAt).toDateString() === today);
+    const todaySum = todayInvs.reduce((s, i) => s + (i.total || 0), 0);
+    document.getElementById('totalInvCount').textContent = allInvoices.length;
+    document.getElementById('todayCount').textContent = todayInvs.length;
+    document.getElementById('todayTotal').textContent = todaySum.toLocaleString('ar-IQ');
+  }
+
+  window.setFilter = function(f, btn) {
+    currentFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilters();
+  };
+
+  window.applyFilters = function() {
+    const q = document.getElementById('searchBar').value.toLowerCase();
+    const now = new Date();
+    const today = now.toDateString();
+    const weekAgo = new Date(now - 7 * 24 * 3600 * 1000);
+
+    let filtered = allInvoices.filter(i => {
+      const matchQ = !q || i.invoiceId.toLowerCase().includes(q) || String(i.tableId).includes(q);
+      if (!matchQ) return false;
+      if (currentFilter === 'today') return new Date(i.createdAt).toDateString() === today;
+      if (currentFilter === 'week') return new Date(i.createdAt) >= weekAgo;
+      return true;
+    });
+    renderInvoices(filtered);
+  };
+
+  function renderInvoices(list) {
+    const container = document.getElementById('invList');
+    if (list.length === 0) {
+      container.innerHTML = `<div class="empty"><div class="icon">🧾</div><div>لا توجد فواتير</div></div>`;
+      return;
+    }
+    // Group by date
+    const byDate = {};
+    list.forEach(inv => {
+      const d = new Date(inv.createdAt).toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      if (!byDate[d]) byDate[d] = [];
+      byDate[d].push(inv);
+    });
+    let html = '';
+    Object.entries(byDate).forEach(([date, invs]) => {
+      html += `<div class="date-group-label">📅 ${date}</div>`;
+      invs.forEach(inv => {
+        const t = new Date(inv.createdAt).toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' });
+        const itemCount = inv.items ? Object.keys(inv.items).length : 0;
+        html += `<a href="invoice-details.html?id=${inv.invoiceId}" class="inv-card">
+          <div class="inv-icon">🧾</div>
+          <div class="inv-body">
+            <div class="inv-id">${inv.invoiceId}</div>
+            <div class="inv-meta">طاولة ${inv.tableId} &nbsp;•&nbsp; ${itemCount} عنصر</div>
+          </div>
+          <div>
+            <div class="inv-total">${(inv.total || 0).toLocaleString('ar-IQ')} د.ع</div>
+            <div class="inv-date-small">${t}</div>
+          </div>
+        </a>`;
+      });
+    });
+    container.innerHTML = html;
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>☕ كوفي شوب - لوحة التحكم</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f0f2f5;
+      --surface: #ffffff;
+      --surface2: #f8f9fa;
+      --border: #e2e8f0;
+      --text: #1a202c;
+      --text2: #4a5568;
+      --text3: #718096;
+      --primary: #6f4e37;
+      --primary-light: #8b6347;
+      --primary-bg: #f5ede8;
+      --green: #22c55e;
+      --green-bg: #dcfce7;
+      --green-text: #15803d;
+      --red: #ef4444;
+      --red-bg: #fee2e2;
+      --red-text: #b91c1c;
+      --amber: #f59e0b;
+      --amber-bg: #fef3c7;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.06);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+    [data-theme="dark"] {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2d3148;
+      --text: #f1f5f9;
+      --text2: #cbd5e1;
+      --text3: #94a3b8;
+      --primary: #c49a72;
+      --primary-light: #d4aa82;
+      --primary-bg: #2a1f15;
+      --green: #4ade80;
+      --green-bg: #052e16;
+      --green-text: #4ade80;
+      --red: #f87171;
+      --red-bg: #2d0a0a;
+      --red-text: #f87171;
+      --amber: #fbbf24;
+      --amber-bg: #2d1d00;
+      --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.2);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.4);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+    /* NAV */
+    .nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow);
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .nav-brand span { font-size: 26px; }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-link {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Cairo', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nav-link:hover { background: var(--primary-bg); color: var(--primary); border-color: var(--primary); }
+    .theme-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      transition: all 0.2s;
+    }
+    .theme-btn:hover { background: var(--primary-bg); border-color: var(--primary); }
+    /* MAIN */
+    .main { padding: 24px 20px; max-width: 900px; margin: 0 auto; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .section-title { font-size: 22px; font-weight: 800; color: var(--text); }
+    .section-sub { font-size: 13px; color: var(--text3); margin-top: 2px; }
+    /* STATS */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 16px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .stat-value { font-size: 28px; font-weight: 800; }
+    .stat-label { font-size: 12px; color: var(--text3); margin-top: 4px; font-weight: 600; }
+    .stat-card.green .stat-value { color: var(--green); }
+    .stat-card.red .stat-value { color: var(--red); }
+    .stat-card.primary .stat-value { color: var(--primary); }
+    /* TABLES GRID */
+    .tables-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    @media (min-width: 480px) {
+      .tables-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (min-width: 700px) {
+      .tables-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .table-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: var(--shadow);
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      overflow: hidden;
+    }
+    .table-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--border);
+      transition: background 0.2s;
+    }
+    .table-card.empty::before { background: var(--green); }
+    .table-card.active::before { background: var(--red); }
+    .table-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .table-card.empty:hover { border-color: var(--green); }
+    .table-card.active:hover { border-color: var(--red); }
+    .table-icon { font-size: 36px; }
+    .table-num { font-size: 16px; font-weight: 800; }
+    .table-status {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+    .table-card.empty .table-status { background: var(--green-bg); color: var(--green-text); }
+    .table-card.active .table-status { background: var(--red-bg); color: var(--red-text); }
+    .table-total {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .table-items { font-size: 12px; color: var(--text3); }
+    /* LOADING */
+    .loading { text-align: center; padding: 60px 20px; color: var(--text3); }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--text);
+      color: var(--surface);
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 999;
+      transition: transform 0.3s;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">
+    <span>☕</span>
+    <div>
+      <div>كوفي شوب</div>
+    </div>
+  </div>
+  <div class="nav-actions">
+    <a href="products.html" class="nav-link">🛍 المنتجات</a>
+    <a href="invoices.html" class="nav-link">🧾 الفواتير</a>
+    <a href="history.html" class="nav-link">📋 السجل</a>
+    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="section-header">
+    <div>
+      <div class="section-title">الطاولات</div>
+      <div class="section-sub" id="lastUpdate">جاري التحديث...</div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card green">
+      <div class="stat-value" id="emptyCount">-</div>
+      <div class="stat-label">فارغة</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-value" id="activeCount">-</div>
+      <div class="stat-label">مشغولة</div>
+    </div>
+    <div class="stat-card primary">
+      <div class="stat-value" id="totalToday">-</div>
+      <div class="stat-label">إجمالي اليوم</div>
+    </div>
+  </div>
+
+  <div id="tablesGrid" class="tables-grid">
+    <div class="loading">
+      <div class="spinner"></div>
+      <div>جاري تحميل الطاولات...</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC7EVNCSl48CQgIC-a8wdC5UG2tKLtNKjQ",
+    authDomain: "garag-system.firebaseapp.com",
+    databaseURL: "https://garag-system-default-rtdb.firebaseio.com",
+    projectId: "garag-system",
+    storageBucket: "garag-system.firebasestorage.app",
+    messagingSenderId: "330947022055",
+    appId: "1:330947022055:web:d0c9d378e200c7de45a642"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Theme
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    document.getElementById('themeBtn').textContent = t === 'dark' ? '☀️' : '🌙';
+  }
+  window.toggleTheme = function() {
+    const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('cs_theme', cur);
+    applyTheme(cur);
+  };
+  applyTheme(localStorage.getItem('cs_theme') || 'light');
+
+  const NUM_TABLES = 8;
+  let todayTotal = 0;
+
+  // Load today's invoices total
+  async function loadTodayTotal() {
+    const snap = await get(ref(db, 'coffeepos/invoices'));
+    if (!snap.exists()) { document.getElementById('totalToday').textContent = '0'; return; }
+    const data = snap.val();
+    const today = new Date().toDateString();
+    let total = 0;
+    Object.values(data).forEach(inv => {
+      if (new Date(inv.createdAt).toDateString() === today) total += inv.total || 0;
+    });
+    todayTotal = total;
+    document.getElementById('totalToday').textContent = total.toLocaleString('ar-IQ');
+  }
+  loadTodayTotal();
+
+  // Listen to tables
+  onValue(ref(db, 'coffeepos/tables'), (snap) => {
+    const data = snap.val() || {};
+    renderTables(data);
+    const now = new Date();
+    document.getElementById('lastUpdate').textContent = `آخر تحديث: ${now.toLocaleTimeString('ar-IQ')}`;
+  });
+
+  function renderTables(data) {
+    const grid = document.getElementById('tablesGrid');
+    let empty = 0, active = 0;
+    let html = '';
+
+    for (let i = 1; i <= NUM_TABLES; i++) {
+      const t = data[`table_${i}`];
+      const isActive = t && t.status === 'active';
+      if (isActive) active++; else empty++;
+
+      let totalStr = '';
+      let itemCount = 0;
+      if (isActive && t.orders) {
+        let sum = 0;
+        const items = Object.values(t.orders);
+        itemCount = items.length;
+        items.forEach(o => sum += (o.total || 0));
+        totalStr = `${sum.toLocaleString('ar-IQ')} د.ع`;
+      }
+
+      html += `
+        <a href="table.html?id=${i}" class="table-card ${isActive ? 'active' : 'empty'}">
+          <div class="table-icon">${isActive ? '🔴' : '🟢'}</div>
+          <div class="table-num">طاولة ${i}</div>
+          <div class="table-status">${isActive ? 'مشغولة' : 'فارغة'}</div>
+          ${isActive ? `<div class="table-total">${totalStr}</div><div class="table-items">${itemCount} عنصر</div>` : '<div class="table-items">انقر للدخول</div>'}
+        </a>`;
+    }
+
+    grid.innerHTML = html;
+    document.getElementById('emptyCount').textContent = empty;
+    document.getElementById('activeCount').textContent = active;
+  }
+</script>
+</body>
+</html>

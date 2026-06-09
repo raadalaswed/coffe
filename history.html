@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>☕ سجل الفواتير</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f0f2f5;
+      --surface: #ffffff;
+      --surface2: #f8f9fa;
+      --border: #e2e8f0;
+      --text: #1a202c;
+      --text2: #4a5568;
+      --text3: #718096;
+      --primary: #6f4e37;
+      --primary-bg: #f5ede8;
+      --green: #22c55e;
+      --green-bg: #dcfce7;
+      --green-text: #15803d;
+      --amber: #f59e0b;
+      --amber-bg: #fef3c7;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.06);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+    [data-theme="dark"] {
+      --bg: #0f1117; --surface: #1a1d27; --surface2: #22263a;
+      --border: #2d3148; --text: #f1f5f9; --text2: #cbd5e1; --text3: #94a3b8;
+      --primary: #c49a72; --primary-bg: #2a1f15;
+      --green: #4ade80; --green-bg: #052e16; --green-text: #4ade80;
+      --amber: #fbbf24; --amber-bg: #2d1d00;
+      --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.2);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    .nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: var(--shadow);
+    }
+    .back-btn {
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text2); padding: 8px 14px; border-radius: var(--radius-sm);
+      text-decoration: none; font-size: 14px; font-weight: 700;
+      cursor: pointer; font-family: 'Cairo', sans-serif; transition: all 0.2s;
+    }
+    .back-btn:hover { background: var(--primary-bg); color: var(--primary); }
+    .nav-title { font-size: 18px; font-weight: 800; color: var(--primary); }
+    .theme-btn {
+      background: var(--surface2); border: 1px solid var(--border);
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 17px;
+    }
+    .main { padding: 20px 16px; max-width: 700px; margin: 0 auto; }
+    /* Summary cards */
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    @media (min-width: 480px) { .summary-cards { grid-template-columns: repeat(4, 1fr); } }
+    .sum-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 12px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .sum-val { font-size: 20px; font-weight: 800; color: var(--primary); }
+    .sum-label { font-size: 11px; color: var(--text3); font-weight: 600; margin-top: 3px; }
+    /* Chart area */
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+    .chart-title { font-size: 14px; font-weight: 800; margin-bottom: 12px; }
+    .chart-bars { display: flex; align-items: flex-end; gap: 6px; height: 80px; }
+    .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .bar {
+      width: 100%;
+      background: var(--primary);
+      border-radius: 4px 4px 0 0;
+      min-height: 4px;
+      transition: height 0.5s ease;
+      position: relative;
+    }
+    .bar:hover::after {
+      content: attr(data-val);
+      position: absolute;
+      top: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: var(--surface);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+    .bar-label { font-size: 10px; color: var(--text3); text-align: center; }
+    /* Filters */
+    .filter-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+    .filter-btn {
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text2); padding: 7px 14px; border-radius: 20px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      font-family: 'Cairo', sans-serif; transition: all 0.2s;
+    }
+    .filter-btn.active { background: var(--primary-bg); color: var(--primary); border-color: var(--primary); }
+    .table-filter {
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text); padding: 7px 12px; border-radius: 20px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      font-family: 'Cairo', sans-serif; margin-right: auto;
+    }
+    .table-filter:focus { outline: none; border-color: var(--primary); }
+    .search-bar {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 10px 14px;
+      font-size: 14px; color: var(--text);
+      font-family: 'Cairo', sans-serif; width: 100%; direction: rtl;
+      margin-bottom: 14px;
+    }
+    .search-bar:focus { outline: none; border-color: var(--primary); }
+    /* History entries */
+    .hist-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .hist-card:hover { transform: translateX(-3px); border-color: var(--primary); }
+    .hist-icon {
+      width: 44px; height: 44px;
+      background: var(--amber-bg);
+      color: var(--amber);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .hist-body { flex: 1; }
+    .hist-id { font-size: 14px; font-weight: 800; }
+    .hist-meta { font-size: 12px; color: var(--text3); margin-top: 2px; }
+    .hist-right { text-align: left; }
+    .hist-total { font-size: 15px; font-weight: 800; color: var(--primary); }
+    .hist-time { font-size: 11px; color: var(--text3); }
+    /* Detail popup */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      display: none; align-items: flex-end; justify-content: center;
+    }
+    .overlay.open { display: flex; }
+    .detail-modal {
+      background: var(--surface);
+      border-radius: var(--radius) var(--radius) 0 0;
+      width: 100%; max-width: 540px;
+      max-height: 80vh;
+      display: flex; flex-direction: column;
+      animation: slideUp 0.25s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-header {
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-title { font-size: 16px; font-weight: 800; }
+    .modal-close {
+      background: var(--surface2); border: 1px solid var(--border);
+      width: 34px; height: 34px; border-radius: 50%;
+      font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; color: var(--text2);
+    }
+    .modal-body { overflow-y: auto; padding: 16px; flex: 1; }
+    .detail-row {
+      display: flex; align-items: center;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+      gap: 10px; font-size: 14px;
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .d-name { flex: 1; font-weight: 600; }
+    .d-qty { color: var(--text3); font-size: 13px; min-width: 30px; text-align: center; }
+    .d-price { color: var(--text3); font-size: 13px; min-width: 70px; text-align: center; }
+    .d-total { font-weight: 800; color: var(--primary); min-width: 80px; text-align: left; }
+    .modal-footer {
+      padding: 14px 16px;
+      border-top: 2px dashed var(--border);
+      display: flex; justify-content: space-between;
+      font-size: 18px; font-weight: 800;
+    }
+    .modal-footer .amount { color: var(--primary); }
+    .date-group-label {
+      font-size: 12px; font-weight: 700; color: var(--text3);
+      padding: 10px 4px 6px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 8px;
+    }
+    .loading { text-align: center; padding: 50px; color: var(--text3); }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 10px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty { text-align: center; padding: 50px; color: var(--text3); }
+    .empty .icon { font-size: 44px; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <a href="index.html" class="back-btn">← رجوع</a>
+  <div class="nav-title">📋 السجل التاريخي</div>
+  <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+</nav>
+
+<div class="main">
+  <div class="summary-cards">
+    <div class="sum-card">
+      <div class="sum-val" id="s_total">-</div>
+      <div class="sum-label">إجمالي الفواتير</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-val" id="s_revenue">-</div>
+      <div class="sum-label">إجمالي الإيرادات</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-val" id="s_avg">-</div>
+      <div class="sum-label">متوسط الفاتورة</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-val" id="s_today">-</div>
+      <div class="sum-label">اليوم</div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">📈 آخر 7 أيام</div>
+    <div class="chart-bars" id="chartBars"></div>
+  </div>
+
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="setFilter('all', this)">الكل</button>
+    <button class="filter-btn" onclick="setFilter('today', this)">اليوم</button>
+    <button class="filter-btn" onclick="setFilter('week', this)">الأسبوع</button>
+    <button class="filter-btn" onclick="setFilter('month', this)">الشهر</button>
+    <select class="table-filter" id="tableFilter" onchange="applyFilters()">
+      <option value="">جميع الطاولات</option>
+      <option value="1">طاولة 1</option>
+      <option value="2">طاولة 2</option>
+      <option value="3">طاولة 3</option>
+      <option value="4">طاولة 4</option>
+      <option value="5">طاولة 5</option>
+      <option value="6">طاولة 6</option>
+      <option value="7">طاولة 7</option>
+      <option value="8">طاولة 8</option>
+    </select>
+  </div>
+  <input class="search-bar" id="searchBar" placeholder="🔍 ابحث..." oninput="applyFilters()" />
+
+  <div id="histList">
+    <div class="loading"><div class="spinner"></div><div>جاري التحميل...</div></div>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="overlay" id="detailOverlay" onclick="closeOnOverlay(event)">
+  <div class="detail-modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">تفاصيل الفاتورة</div>
+      <button class="modal-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <span>الإجمالي</span>
+      <span class="amount" id="modalTotal">0 د.ع</span>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC7EVNCSl48CQgIC-a8wdC5UG2tKLtNKjQ",
+    authDomain: "garag-system.firebaseapp.com",
+    databaseURL: "https://garag-system-default-rtdb.firebaseio.com",
+    projectId: "garag-system",
+    storageBucket: "garag-system.firebasestorage.app",
+    messagingSenderId: "330947022055",
+    appId: "1:330947022055:web:d0c9d378e200c7de45a642"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    document.getElementById('themeBtn').textContent = t === 'dark' ? '☀️' : '🌙';
+  }
+  window.toggleTheme = function() {
+    const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('cs_theme', cur);
+    applyTheme(cur);
+  };
+  applyTheme(localStorage.getItem('cs_theme') || 'light');
+
+  let allHistory = [];
+  let currentFilter = 'all';
+
+  onValue(ref(db, 'coffeepos/history'), snap => {
+    allHistory = [];
+    if (snap.exists()) {
+      Object.entries(snap.val()).forEach(([id, inv]) => allHistory.push({ ...inv, invoiceId: id }));
+      allHistory.sort((a, b) => b.createdAt - a.createdAt);
+    }
+    updateStats();
+    renderChart();
+    applyFilters();
+  });
+
+  function updateStats() {
+    const total = allHistory.length;
+    const revenue = allHistory.reduce((s, i) => s + (i.total || 0), 0);
+    const avg = total > 0 ? Math.round(revenue / total) : 0;
+    const today = new Date().toDateString();
+    const todayCount = allHistory.filter(i => new Date(i.createdAt).toDateString() === today).length;
+    document.getElementById('s_total').textContent = total;
+    document.getElementById('s_revenue').textContent = revenue.toLocaleString('ar-IQ');
+    document.getElementById('s_avg').textContent = avg.toLocaleString('ar-IQ');
+    document.getElementById('s_today').textContent = todayCount;
+  }
+
+  function renderChart() {
+    const days = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      days.push({ date: d.toDateString(), label: d.toLocaleDateString('ar-IQ', { weekday: 'short' }), total: 0 });
+    }
+    allHistory.forEach(inv => {
+      const d = new Date(inv.createdAt).toDateString();
+      const day = days.find(x => x.date === d);
+      if (day) day.total += inv.total || 0;
+    });
+    const max = Math.max(...days.map(d => d.total), 1);
+    const bars = document.getElementById('chartBars');
+    bars.innerHTML = days.map(d => {
+      const h = Math.max((d.total / max) * 80, d.total > 0 ? 8 : 4);
+      return `<div class="bar-wrap">
+        <div class="bar" style="height:${h}px" data-val="${d.total.toLocaleString('ar-IQ')} د.ع"></div>
+        <div class="bar-label">${d.label}</div>
+      </div>`;
+    }).join('');
+  }
+
+  window.setFilter = function(f, btn) {
+    currentFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilters();
+  };
+
+  window.applyFilters = function() {
+    const q = document.getElementById('searchBar').value.toLowerCase();
+    const tbl = document.getElementById('tableFilter').value;
+    const now = new Date();
+    const today = now.toDateString();
+    const weekAgo = new Date(now - 7 * 24 * 3600 * 1000);
+    const monthAgo = new Date(now - 30 * 24 * 3600 * 1000);
+
+    const filtered = allHistory.filter(inv => {
+      const matchQ = !q || inv.invoiceId.toLowerCase().includes(q);
+      const matchT = !tbl || String(inv.tableId) === tbl;
+      let matchF = true;
+      if (currentFilter === 'today') matchF = new Date(inv.createdAt).toDateString() === today;
+      else if (currentFilter === 'week') matchF = new Date(inv.createdAt) >= weekAgo;
+      else if (currentFilter === 'month') matchF = new Date(inv.createdAt) >= monthAgo;
+      return matchQ && matchT && matchF;
+    });
+    renderHistory(filtered);
+  };
+
+  function renderHistory(list) {
+    const container = document.getElementById('histList');
+    if (list.length === 0) {
+      container.innerHTML = `<div class="empty"><div class="icon">📋</div><div>لا يوجد سجل</div></div>`;
+      return;
+    }
+    const byDate = {};
+    list.forEach(inv => {
+      const d = new Date(inv.createdAt).toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      if (!byDate[d]) byDate[d] = [];
+      byDate[d].push(inv);
+    });
+    let html = '';
+    Object.entries(byDate).forEach(([date, invs]) => {
+      const dayTotal = invs.reduce((s, i) => s + (i.total || 0), 0);
+      html += `<div class="date-group-label">📅 ${date} &nbsp;|&nbsp; ${invs.length} فاتورة &nbsp;|&nbsp; ${dayTotal.toLocaleString('ar-IQ')} د.ع</div>`;
+      invs.forEach(inv => {
+        const t = new Date(inv.createdAt).toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' });
+        const ic = inv.items ? Object.keys(inv.items).length : 0;
+        html += `<div class="hist-card" onclick="openDetail('${inv.invoiceId}')">
+          <div class="hist-icon">📄</div>
+          <div class="hist-body">
+            <div class="hist-id">${inv.invoiceId}</div>
+            <div class="hist-meta">طاولة ${inv.tableId} &nbsp;•&nbsp; ${ic} عنصر</div>
+          </div>
+          <div class="hist-right">
+            <div class="hist-total">${(inv.total || 0).toLocaleString('ar-IQ')} د.ع</div>
+            <div class="hist-time">${t}</div>
+          </div>
+        </div>`;
+      });
+    });
+    container.innerHTML = html;
+  }
+
+  window.openDetail = function(id) {
+    const inv = allHistory.find(i => i.invoiceId === id);
+    if (!inv) return;
+    document.getElementById('modalTitle').textContent = `🧾 ${inv.invoiceId} — طاولة ${inv.tableId}`;
+    const items = inv.items ? Object.values(inv.items) : [];
+    let html = `<div style="font-size:12px;color:var(--text3);margin-bottom:10px">${new Date(inv.createdAt).toLocaleString('ar-IQ')}</div>`;
+    items.forEach(item => {
+      html += `<div class="detail-row">
+        <span class="d-name">${item.name}</span>
+        <span class="d-qty">×${item.qty}</span>
+        <span class="d-price">${item.price.toLocaleString('ar-IQ')}</span>
+        <span class="d-total">${(item.total || item.price * item.qty).toLocaleString('ar-IQ')} د.ع</span>
+      </div>`;
+    });
+    document.getElementById('modalBody').innerHTML = html;
+    document.getElementById('modalTotal').textContent = `${(inv.total || 0).toLocaleString('ar-IQ')} د.ع`;
+    document.getElementById('detailOverlay').classList.add('open');
+  };
+
+  window.closeDetail = function() {
+    document.getElementById('detailOverlay').classList.remove('open');
+  };
+  window.closeOnOverlay = function(e) {
+    if (e.target === document.getElementById('detailOverlay')) closeDetail();
+  };
+</script>
+</body>
+</html>

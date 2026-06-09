@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>☕ تفاصيل الفاتورة</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f0f2f5;
+      --surface: #ffffff;
+      --surface2: #f8f9fa;
+      --border: #e2e8f0;
+      --text: #1a202c;
+      --text2: #4a5568;
+      --text3: #718096;
+      --primary: #6f4e37;
+      --primary-bg: #f5ede8;
+      --green: #22c55e;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.06);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+    [data-theme="dark"] {
+      --bg: #0f1117; --surface: #1a1d27; --surface2: #22263a;
+      --border: #2d3148; --text: #f1f5f9; --text2: #cbd5e1; --text3: #94a3b8;
+      --primary: #c49a72; --primary-bg: #2a1f15;
+      --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.2);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    .nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: var(--shadow);
+    }
+    .back-btn {
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text2); padding: 8px 14px; border-radius: var(--radius-sm);
+      text-decoration: none; font-size: 14px; font-weight: 700;
+      cursor: pointer; font-family: 'Cairo', sans-serif; transition: all 0.2s;
+    }
+    .back-btn:hover { background: var(--primary-bg); color: var(--primary); }
+    .nav-title { font-size: 18px; font-weight: 800; color: var(--primary); }
+    .theme-btn {
+      background: var(--surface2); border: 1px solid var(--border);
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 17px;
+    }
+    .main { padding: 20px 16px; max-width: 600px; margin: 0 auto; }
+    /* Invoice receipt style */
+    .receipt {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+    .receipt-header {
+      background: var(--primary);
+      color: white;
+      padding: 28px 24px;
+      text-align: center;
+    }
+    .receipt-logo { font-size: 40px; margin-bottom: 8px; }
+    .receipt-shop { font-size: 20px; font-weight: 800; }
+    .receipt-sub { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+    .receipt-id {
+      background: rgba(255,255,255,0.15);
+      display: inline-block;
+      padding: 6px 20px;
+      border-radius: 20px;
+      font-size: 18px;
+      font-weight: 800;
+      margin-top: 12px;
+    }
+    .receipt-meta {
+      padding: 16px 20px;
+      border-bottom: 1px dashed var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .meta-item { }
+    .meta-label { font-size: 11px; color: var(--text3); font-weight: 700; }
+    .meta-value { font-size: 14px; font-weight: 700; color: var(--text); }
+    /* Items table */
+    .items-section { padding: 16px 20px; }
+    .items-header {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text3);
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 8px;
+    }
+    .item-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 8px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      align-items: center;
+    }
+    .item-row:last-child { border-bottom: none; }
+    .item-name { font-weight: 600; }
+    .item-qty { text-align: center; color: var(--text3); font-size: 13px; }
+    .item-price { text-align: center; color: var(--text3); font-size: 13px; }
+    .item-total { text-align: left; font-weight: 800; color: var(--primary); font-size: 13px; }
+    /* Summary */
+    .receipt-summary {
+      background: var(--surface2);
+      padding: 16px 20px;
+      border-top: 2px dashed var(--border);
+    }
+    .sum-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 14px;
+    }
+    .sum-row.grand {
+      font-size: 20px;
+      font-weight: 800;
+      border-top: 2px solid var(--border);
+      margin-top: 8px;
+      padding-top: 14px;
+    }
+    .sum-row.grand .amount { color: var(--primary); }
+    /* Print button */
+    .actions { padding: 16px 20px; display: flex; gap: 10px; }
+    .btn-print {
+      flex: 1;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+      transition: opacity 0.2s;
+    }
+    .btn-print:hover { opacity: 0.85; }
+    .btn-back {
+      flex: 1;
+      background: var(--surface2);
+      color: var(--text2);
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+      text-decoration: none;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .loading { text-align: center; padding: 60px; color: var(--text3); }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 10px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media print {
+      .nav, .actions { display: none !important; }
+      body { background: white; }
+      .main { padding: 0; max-width: 100%; }
+      .receipt { box-shadow: none; border: none; }
+    }
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <a href="invoices.html" class="back-btn">← الفواتير</a>
+  <div class="nav-title">🧾 تفاصيل الفاتورة</div>
+  <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+</nav>
+
+<div class="main">
+  <div id="content">
+    <div class="loading"><div class="spinner"></div><div>جاري تحميل الفاتورة...</div></div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC7EVNCSl48CQgIC-a8wdC5UG2tKLtNKjQ",
+    authDomain: "garag-system.firebaseapp.com",
+    databaseURL: "https://garag-system-default-rtdb.firebaseio.com",
+    projectId: "garag-system",
+    storageBucket: "garag-system.firebasestorage.app",
+    messagingSenderId: "330947022055",
+    appId: "1:330947022055:web:d0c9d378e200c7de45a642"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    document.getElementById('themeBtn').textContent = t === 'dark' ? '☀️' : '🌙';
+  }
+  window.toggleTheme = function() {
+    const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('cs_theme', cur);
+    applyTheme(cur);
+  };
+  applyTheme(localStorage.getItem('cs_theme') || 'light');
+
+  const params = new URLSearchParams(location.search);
+  const invoiceId = params.get('id');
+
+  async function loadInvoice() {
+    if (!invoiceId) { showError('لم يتم تحديد الفاتورة'); return; }
+    const snap = await get(ref(db, `coffeepos/invoices/${invoiceId}`));
+    if (!snap.exists()) { showError('الفاتورة غير موجودة'); return; }
+    renderInvoice({ ...snap.val(), invoiceId });
+  }
+
+  function renderInvoice(inv) {
+    const date = new Date(inv.createdAt);
+    const dateStr = date.toLocaleDateString('ar-IQ', { year: 'numeric', month: 'long', day: 'numeric' });
+    const timeStr = date.toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' });
+    const items = inv.items ? Object.values(inv.items) : [];
+    const itemCount = items.length;
+
+    let itemsHtml = '';
+    items.forEach(item => {
+      itemsHtml += `<div class="item-row">
+        <div class="item-name">${item.name}</div>
+        <div class="item-qty">×${item.qty}</div>
+        <div class="item-price">${item.price.toLocaleString('ar-IQ')}</div>
+        <div class="item-total">${(item.total || item.price * item.qty).toLocaleString('ar-IQ')}</div>
+      </div>`;
+    });
+
+    document.getElementById('content').innerHTML = `
+      <div class="receipt">
+        <div class="receipt-header">
+          <div class="receipt-logo">☕</div>
+          <div class="receipt-shop">كوفي شوب</div>
+          <div class="receipt-sub">فاتورة مبيعات</div>
+          <div class="receipt-id">${inv.invoiceId}</div>
+        </div>
+        <div class="receipt-meta">
+          <div class="meta-item">
+            <div class="meta-label">رقم الطاولة</div>
+            <div class="meta-value">طاولة ${inv.tableId}</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">عدد العناصر</div>
+            <div class="meta-value">${itemCount} عنصر</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">التاريخ</div>
+            <div class="meta-value">${dateStr}</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">الوقت</div>
+            <div class="meta-value">${timeStr}</div>
+          </div>
+        </div>
+        <div class="items-section">
+          <div class="items-header">
+            <span>المنتج</span>
+            <span>الكمية</span>
+            <span>السعر</span>
+            <span>الإجمالي</span>
+          </div>
+          ${itemsHtml}
+        </div>
+        <div class="receipt-summary">
+          <div class="sum-row">
+            <span>المجموع الفرعي</span>
+            <span>${(inv.total || 0).toLocaleString('ar-IQ')} د.ع</span>
+          </div>
+          <div class="sum-row grand">
+            <span>الإجمالي</span>
+            <span class="amount">${(inv.total || 0).toLocaleString('ar-IQ')} د.ع</span>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-print" onclick="window.print()">🖨 طباعة الفاتورة</button>
+          <a href="index.html" class="btn-back">🏠 الرئيسية</a>
+        </div>
+      </div>`;
+  }
+
+  function showError(msg) {
+    document.getElementById('content').innerHTML = `<div style="text-align:center;padding:60px;color:var(--text3)"><div style="font-size:44px">⚠️</div><div style="margin-top:10px">${msg}</div></div>`;
+  }
+
+  loadInvoice();
+</script>
+</body>
+</html>

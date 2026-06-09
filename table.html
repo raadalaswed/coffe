@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>☕ طاولة</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f0f2f5;
+      --surface: #ffffff;
+      --surface2: #f8f9fa;
+      --border: #e2e8f0;
+      --text: #1a202c;
+      --text2: #4a5568;
+      --text3: #718096;
+      --primary: #6f4e37;
+      --primary-light: #8b6347;
+      --primary-bg: #f5ede8;
+      --green: #22c55e;
+      --green-bg: #dcfce7;
+      --green-text: #15803d;
+      --red: #ef4444;
+      --red-bg: #fee2e2;
+      --red-text: #b91c1c;
+      --amber: #f59e0b;
+      --amber-bg: #fef3c7;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.06);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+    [data-theme="dark"] {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2d3148;
+      --text: #f1f5f9;
+      --text2: #cbd5e1;
+      --text3: #94a3b8;
+      --primary: #c49a72;
+      --primary-light: #d4aa82;
+      --primary-bg: #2a1f15;
+      --green: #4ade80;
+      --green-bg: #052e16;
+      --green-text: #4ade80;
+      --red: #f87171;
+      --red-bg: #2d0a0a;
+      --red-text: #f87171;
+      --amber: #fbbf24;
+      --amber-bg: #2d1d00;
+      --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.2);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.4);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    /* NAV */
+    .nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: var(--shadow);
+      flex-shrink: 0;
+    }
+    .back-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+      transition: all 0.2s;
+    }
+    .back-btn:hover { background: var(--primary-bg); color: var(--primary); }
+    .nav-title { font-size: 18px; font-weight: 800; color: var(--primary); }
+    .theme-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 17px;
+      transition: all 0.2s;
+    }
+    /* LAYOUT */
+    .layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      flex-direction: column;
+    }
+    @media (min-width: 720px) {
+      .layout { flex-direction: row; }
+    }
+    /* ORDERS PANEL */
+    .orders-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .panel-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .panel-title { font-size: 15px; font-weight: 700; }
+    .orders-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .order-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow);
+    }
+    .order-name { flex: 1; font-size: 14px; font-weight: 700; }
+    .order-price { font-size: 12px; color: var(--text3); }
+    .qty-ctrl {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .qty-btn {
+      width: 30px; height: 30px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface2);
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+      font-family: 'Cairo', sans-serif;
+    }
+    .qty-btn:hover { background: var(--primary-bg); color: var(--primary); border-color: var(--primary); }
+    .qty-val { font-size: 15px; font-weight: 800; min-width: 24px; text-align: center; }
+    .order-total { font-size: 14px; font-weight: 800; color: var(--primary); min-width: 80px; text-align: left; }
+    .del-btn {
+      background: var(--red-bg);
+      color: var(--red-text);
+      border: none;
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .del-btn:hover { opacity: 0.7; }
+    .empty-orders {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text3);
+      gap: 8px;
+      padding: 40px;
+    }
+    .empty-orders .icon { font-size: 48px; }
+    /* SUMMARY / CHECKOUT */
+    .summary-panel {
+      background: var(--surface);
+      border-top: 2px solid var(--border);
+      padding: 14px 16px;
+      flex-shrink: 0;
+    }
+    @media (min-width: 720px) {
+      .summary-panel {
+        width: 280px;
+        border-top: none;
+        border-right: 2px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+      }
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 14px;
+    }
+    .summary-row.total {
+      border-top: 2px dashed var(--border);
+      margin-top: 6px;
+      padding-top: 14px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .summary-row.total .amount { color: var(--primary); }
+    .btn-checkout {
+      width: 100%;
+      background: var(--green);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: var(--radius-sm);
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 12px;
+      font-family: 'Cairo', sans-serif;
+      transition: opacity 0.2s;
+    }
+    .btn-checkout:hover { opacity: 0.85; }
+    .btn-checkout:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-clear {
+      width: 100%;
+      background: var(--red-bg);
+      color: var(--red-text);
+      border: 1px solid var(--red);
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      font-family: 'Cairo', sans-serif;
+      transition: opacity 0.2s;
+    }
+    .btn-clear:hover { opacity: 0.7; }
+    /* PRODUCTS MODAL */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border-radius: var(--radius) var(--radius) 0 0;
+      width: 100%;
+      max-width: 540px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      animation: slideUp 0.25s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-header {
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-title { font-size: 16px; font-weight: 800; }
+    .modal-close {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text2);
+    }
+    .search-input {
+      margin: 12px;
+      padding: 10px 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      color: var(--text);
+      font-family: 'Cairo', sans-serif;
+      width: calc(100% - 24px);
+      direction: rtl;
+    }
+    .search-input:focus { outline: none; border-color: var(--primary); }
+    .products-list {
+      overflow-y: auto;
+      flex: 1;
+      padding: 0 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .cat-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text3);
+      text-transform: uppercase;
+      padding: 8px 4px 4px;
+    }
+    .product-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'Cairo', sans-serif;
+      text-align: right;
+    }
+    .product-btn:hover { background: var(--primary-bg); border-color: var(--primary); }
+    .product-btn:active { transform: scale(0.98); }
+    .prod-name { font-size: 14px; font-weight: 700; color: var(--text); }
+    .prod-cat { font-size: 11px; color: var(--text3); }
+    .prod-price { font-size: 14px; font-weight: 800; color: var(--primary); }
+    .add-btn {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 40px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+      box-shadow: var(--shadow-lg);
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.2s;
+    }
+    .add-btn:hover { transform: translateX(-50%) scale(1.04); }
+    @media (min-width: 720px) {
+      .add-btn { bottom: 24px; }
+    }
+    /* CONFIRM DIALOG */
+    .confirm-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .confirm-overlay.open { display: flex; }
+    .confirm-box {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+    }
+    .confirm-icon { font-size: 48px; margin-bottom: 12px; }
+    .confirm-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+    .confirm-sub { font-size: 14px; color: var(--text3); margin-bottom: 20px; }
+    .confirm-btns { display: flex; gap: 10px; }
+    .confirm-btns button {
+      flex: 1;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+      border: none;
+    }
+    .btn-yes { background: var(--green); color: white; }
+    .btn-no { background: var(--surface2); color: var(--text2); border: 1px solid var(--border) !important; }
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--text);
+      color: var(--surface);
+      padding: 10px 22px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 999;
+      transition: transform 0.3s;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="back-btn">← رجوع</a>
+  <div class="nav-title" id="navTitle">طاولة</div>
+  <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+</nav>
+
+<div class="layout">
+  <!-- Orders list -->
+  <div class="orders-panel">
+    <div class="panel-header">
+      <div class="panel-title" id="panelTitle">الطلبات الحالية</div>
+      <div id="itemCount" style="font-size:13px;color:var(--text3)"></div>
+    </div>
+    <div class="orders-list" id="ordersList">
+      <div class="empty-orders">
+        <div class="icon">🛒</div>
+        <div>لا توجد طلبات بعد</div>
+        <div style="font-size:12px">اضغط + لإضافة طلب</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary panel -->
+  <div class="summary-panel">
+    <div class="summary-row">
+      <span>عدد العناصر</span>
+      <span id="sumItems">0</span>
+    </div>
+    <div class="summary-row">
+      <span>المجموع الفرعي</span>
+      <span id="sumSub">0 د.ع</span>
+    </div>
+    <div class="summary-row total">
+      <span>الإجمالي</span>
+      <span class="amount" id="sumTotal">0 د.ع</span>
+    </div>
+    <button class="btn-checkout" id="checkoutBtn" onclick="confirmCheckout()" disabled>✅ دفع وإغلاق الفاتورة</button>
+    <button class="btn-clear" onclick="confirmClear()">🗑 تصفير الطاولة</button>
+  </div>
+</div>
+
+<!-- Floating Add Button -->
+<button class="add-btn" onclick="openProductsModal()">
+  ＋ إضافة طلب
+</button>
+
+<!-- Products Modal -->
+<div class="overlay" id="productsOverlay" onclick="closeOnOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">اختر منتجاً</div>
+      <button class="modal-close" onclick="closeProductsModal()">✕</button>
+    </div>
+    <input class="search-input" id="searchInput" placeholder="🔍 ابحث عن منتج..." oninput="filterProducts()" />
+    <div class="products-list" id="productsList">
+      <div style="text-align:center;padding:30px;color:var(--text3)">جاري التحميل...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Checkout Confirm -->
+<div class="confirm-overlay" id="checkoutConfirm">
+  <div class="confirm-box">
+    <div class="confirm-icon">💳</div>
+    <div class="confirm-title">تأكيد الدفع</div>
+    <div class="confirm-sub" id="checkoutSubText">هل تريد إصدار الفاتورة وإغلاق الطاولة؟</div>
+    <div class="confirm-btns">
+      <button class="btn-yes" onclick="doCheckout()">نعم، دفع</button>
+      <button class="btn-no" onclick="document.getElementById('checkoutConfirm').classList.remove('open')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- Clear Confirm -->
+<div class="confirm-overlay" id="clearConfirm">
+  <div class="confirm-box">
+    <div class="confirm-icon">🗑</div>
+    <div class="confirm-title">تصفير الطاولة</div>
+    <div class="confirm-sub">سيتم حذف جميع الطلبات. هل أنت متأكد؟</div>
+    <div class="confirm-btns">
+      <button class="btn-yes" style="background:var(--red)" onclick="doClear()">نعم، تصفير</button>
+      <button class="btn-no" onclick="document.getElementById('clearConfirm').classList.remove('open')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue, set, update, remove, get, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC7EVNCSl48CQgIC-a8wdC5UG2tKLtNKjQ",
+    authDomain: "garag-system.firebaseapp.com",
+    databaseURL: "https://garag-system-default-rtdb.firebaseio.com",
+    projectId: "garag-system",
+    storageBucket: "garag-system.firebasestorage.app",
+    messagingSenderId: "330947022055",
+    appId: "1:330947022055:web:d0c9d378e200c7de45a642"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Theme
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    document.getElementById('themeBtn').textContent = t === 'dark' ? '☀️' : '🌙';
+  }
+  window.toggleTheme = function() {
+    const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('cs_theme', cur);
+    applyTheme(cur);
+  };
+  applyTheme(localStorage.getItem('cs_theme') || 'light');
+
+  // Get table ID from URL
+  const params = new URLSearchParams(location.search);
+  const tableId = parseInt(params.get('id')) || 1;
+  const tableKey = `table_${tableId}`;
+  document.getElementById('navTitle').textContent = `طاولة ${tableId}`;
+  document.getElementById('panelTitle').textContent = `طلبات الطاولة ${tableId}`;
+
+  let allProducts = [];
+  let currentOrders = {};
+
+  // Load products
+  onValue(ref(db, 'coffeepos/products'), snap => {
+    allProducts = [];
+    if (snap.exists()) {
+      Object.entries(snap.val()).forEach(([id, p]) => allProducts.push({ id, ...p }));
+    }
+  });
+
+  // Listen to table orders
+  onValue(ref(db, `coffeepos/tables/${tableKey}`), snap => {
+    const data = snap.val() || {};
+    currentOrders = data.orders || {};
+    renderOrders();
+  });
+
+  function renderOrders() {
+    const list = document.getElementById('ordersList');
+    const items = Object.entries(currentOrders);
+
+    if (items.length === 0) {
+      list.innerHTML = `<div class="empty-orders"><div class="icon">🛒</div><div>لا توجد طلبات بعد</div><div style="font-size:12px">اضغط + لإضافة طلب</div></div>`;
+      updateSummary(0, 0);
+      document.getElementById('checkoutBtn').disabled = true;
+      return;
+    }
+
+    let total = 0;
+    let html = '';
+    items.forEach(([itemId, o]) => {
+      total += o.total || 0;
+      html += `
+        <div class="order-item">
+          <div style="flex:1">
+            <div class="order-name">${o.name}</div>
+            <div class="order-price">${o.price.toLocaleString('ar-IQ')} د.ع × ${o.qty}</div>
+          </div>
+          <div class="qty-ctrl">
+            <button class="qty-btn" onclick="changeQty('${itemId}', -1)">−</button>
+            <span class="qty-val">${o.qty}</span>
+            <button class="qty-btn" onclick="changeQty('${itemId}', 1)">+</button>
+          </div>
+          <div class="order-total">${(o.total || 0).toLocaleString('ar-IQ')} <small style="font-size:10px;font-weight:500">د.ع</small></div>
+          <button class="del-btn" onclick="removeOrder('${itemId}')">✕</button>
+        </div>`;
+    });
+
+    list.innerHTML = html;
+    updateSummary(items.length, total);
+    document.getElementById('checkoutBtn').disabled = false;
+    document.getElementById('checkoutSubText').textContent = `إجمالي الفاتورة: ${total.toLocaleString('ar-IQ')} د.ع`;
+  }
+
+  function updateSummary(count, total) {
+    document.getElementById('sumItems').textContent = count;
+    document.getElementById('sumSub').textContent = `${total.toLocaleString('ar-IQ')} د.ع`;
+    document.getElementById('sumTotal').textContent = `${total.toLocaleString('ar-IQ')} د.ع`;
+    document.getElementById('itemCount').textContent = count > 0 ? `${count} عنصر` : '';
+  }
+
+  // Add order
+  async function addOrder(product) {
+    const orders = currentOrders;
+    // Check if product already in orders
+    const existing = Object.entries(orders).find(([, o]) => o.name === product.name);
+    if (existing) {
+      const [itemId, o] = existing;
+      const newQty = o.qty + 1;
+      await update(ref(db, `coffeepos/tables/${tableKey}/orders/${itemId}`), {
+        qty: newQty,
+        total: newQty * o.price
+      });
+    } else {
+      const itemId = `item_${Date.now()}`;
+      await set(ref(db, `coffeepos/tables/${tableKey}/orders/${itemId}`), {
+        name: product.name,
+        price: product.price,
+        qty: 1,
+        total: product.price
+      });
+      await update(ref(db, `coffeepos/tables/${tableKey}`), {
+        status: 'active',
+        updatedAt: Date.now()
+      });
+    }
+    showToast(`✅ تمت إضافة ${product.name}`);
+  }
+
+  window.changeQty = async function(itemId, delta) {
+    const o = currentOrders[itemId];
+    if (!o) return;
+    const newQty = o.qty + delta;
+    if (newQty <= 0) {
+      removeOrder(itemId);
+      return;
+    }
+    await update(ref(db, `coffeepos/tables/${tableKey}/orders/${itemId}`), {
+      qty: newQty,
+      total: newQty * o.price
+    });
+  };
+
+  window.removeOrder = async function(itemId) {
+    await remove(ref(db, `coffeepos/tables/${tableKey}/orders/${itemId}`));
+    // If no more orders, set empty
+    const snap = await get(ref(db, `coffeepos/tables/${tableKey}/orders`));
+    if (!snap.exists()) {
+      await update(ref(db, `coffeepos/tables/${tableKey}`), { status: 'empty' });
+    }
+    showToast('🗑 تم حذف العنصر');
+  };
+
+  // Checkout
+  window.confirmCheckout = function() {
+    if (Object.keys(currentOrders).length === 0) return;
+    document.getElementById('checkoutConfirm').classList.add('open');
+  };
+
+  window.doCheckout = async function() {
+    document.getElementById('checkoutConfirm').classList.remove('open');
+    const orders = currentOrders;
+    if (Object.keys(orders).length === 0) return;
+
+    let total = 0;
+    Object.values(orders).forEach(o => total += o.total || 0);
+
+    // Get invoice counter
+    const counterSnap = await get(ref(db, 'coffeepos/settings/invoiceCounter'));
+    const counter = (counterSnap.val() || 0) + 1;
+    const invoiceId = `INV-${String(counter).padStart(4, '0')}`;
+
+    const invoice = {
+      invoiceId,
+      tableId,
+      items: orders,
+      total,
+      createdAt: Date.now()
+    };
+
+    // Save invoice
+    await set(ref(db, `coffeepos/invoices/${invoiceId}`), invoice);
+    // Save to history
+    await set(ref(db, `coffeepos/history/${invoiceId}`), invoice);
+    // Update counter
+    await set(ref(db, 'coffeepos/settings/invoiceCounter'), counter);
+    // Clear table
+    await set(ref(db, `coffeepos/tables/${tableKey}`), { status: 'empty', orders: null });
+
+    showToast(`🧾 تم إصدار الفاتورة ${invoiceId}`);
+    setTimeout(() => { window.location.href = `invoice-details.html?id=${invoiceId}`; }, 1200);
+  };
+
+  // Clear table
+  window.confirmClear = function() {
+    document.getElementById('clearConfirm').classList.add('open');
+  };
+  window.doClear = async function() {
+    document.getElementById('clearConfirm').classList.remove('open');
+    await set(ref(db, `coffeepos/tables/${tableKey}`), { status: 'empty', orders: null });
+    showToast('✅ تم تصفير الطاولة');
+  };
+
+  // Products modal
+  window.openProductsModal = function() {
+    document.getElementById('productsOverlay').classList.add('open');
+    renderProductsList(allProducts);
+    document.getElementById('searchInput').value = '';
+  };
+  window.closeProductsModal = function() {
+    document.getElementById('productsOverlay').classList.remove('open');
+  };
+  window.closeOnOverlay = function(e) {
+    if (e.target === document.getElementById('productsOverlay')) closeProductsModal();
+  };
+
+  window.filterProducts = function() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = allProducts.filter(p => p.name.toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q));
+    renderProductsList(filtered);
+  };
+
+  function renderProductsList(products) {
+    const list = document.getElementById('productsList');
+    if (products.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text3)">لا توجد منتجات</div>';
+      return;
+    }
+    // Group by category
+    const bycat = {};
+    products.forEach(p => {
+      const cat = p.category || 'عام';
+      if (!bycat[cat]) bycat[cat] = [];
+      bycat[cat].push(p);
+    });
+    let html = '';
+    Object.entries(bycat).forEach(([cat, items]) => {
+      html += `<div class="cat-label">📁 ${cat}</div>`;
+      items.forEach(p => {
+        html += `<button class="product-btn" onclick="selectProduct('${p.id}')">
+          <div>
+            <div class="prod-name">${p.name}</div>
+            <div class="prod-cat">${p.category || ''}</div>
+          </div>
+          <div class="prod-price">${p.price.toLocaleString('ar-IQ')} د.ع</div>
+        </button>`;
+      });
+    });
+    list.innerHTML = html;
+  }
+
+  window.selectProduct = function(productId) {
+    const product = allProducts.find(p => p.id === productId);
+    if (!product) return;
+    addOrder(product);
+    closeProductsModal();
+  };
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+</script>
+</body>
+</html>

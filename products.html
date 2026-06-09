@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>☕ إدارة المنتجات</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f0f2f5;
+      --surface: #ffffff;
+      --surface2: #f8f9fa;
+      --border: #e2e8f0;
+      --text: #1a202c;
+      --text2: #4a5568;
+      --text3: #718096;
+      --primary: #6f4e37;
+      --primary-bg: #f5ede8;
+      --green: #22c55e;
+      --green-bg: #dcfce7;
+      --green-text: #15803d;
+      --red: #ef4444;
+      --red-bg: #fee2e2;
+      --red-text: #b91c1c;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.06);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+    [data-theme="dark"] {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2d3148;
+      --text: #f1f5f9;
+      --text2: #cbd5e1;
+      --text3: #94a3b8;
+      --primary: #c49a72;
+      --primary-bg: #2a1f15;
+      --green: #4ade80;
+      --green-bg: #052e16;
+      --green-text: #4ade80;
+      --red: #f87171;
+      --red-bg: #2d0a0a;
+      --red-text: #f87171;
+      --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.2);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.4);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    .nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: var(--shadow);
+    }
+    .back-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+      transition: all 0.2s;
+    }
+    .back-btn:hover { background: var(--primary-bg); color: var(--primary); }
+    .nav-title { font-size: 18px; font-weight: 800; color: var(--primary); }
+    .theme-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 17px;
+      transition: all 0.2s;
+    }
+    .main { padding: 20px 16px; max-width: 700px; margin: 0 auto; }
+    /* Add product form */
+    .add-form {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+    .form-title { font-size: 16px; font-weight: 800; margin-bottom: 14px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .field label { font-size: 13px; font-weight: 700; color: var(--text2); }
+    .field input, .field select {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-size: 14px;
+      color: var(--text);
+      font-family: 'Cairo', sans-serif;
+      direction: rtl;
+      transition: border 0.2s;
+    }
+    .field input:focus, .field select:focus { outline: none; border-color: var(--primary); }
+    .btn-add {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+      transition: opacity 0.2s;
+    }
+    .btn-add:hover { opacity: 0.85; }
+    /* Products list */
+    .prod-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .prod-header-title { font-size: 16px; font-weight: 800; }
+    .prod-count { font-size: 13px; color: var(--text3); }
+    .search-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 14px;
+      color: var(--text);
+      font-family: 'Cairo', sans-serif;
+      width: 100%;
+      direction: rtl;
+      margin-bottom: 12px;
+    }
+    .search-bar:focus { outline: none; border-color: var(--primary); }
+    .cat-section { margin-bottom: 16px; }
+    .cat-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text3);
+      padding: 6px 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .prod-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+      box-shadow: var(--shadow);
+    }
+    .prod-icon { font-size: 28px; }
+    .prod-info { flex: 1; }
+    .prod-name { font-size: 14px; font-weight: 700; }
+    .prod-meta { font-size: 12px; color: var(--text3); }
+    .prod-price-badge {
+      background: var(--primary-bg);
+      color: var(--primary);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .prod-actions { display: flex; gap: 6px; }
+    .edit-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      transition: all 0.15s;
+    }
+    .edit-btn:hover { background: var(--primary-bg); color: var(--primary); border-color: var(--primary); }
+    .del-btn {
+      background: var(--red-bg);
+      border: none;
+      color: var(--red-text);
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+    .del-btn:hover { opacity: 0.7; }
+    /* Edit Modal */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border-radius: var(--radius) var(--radius) 0 0;
+      width: 100%; max-width: 520px;
+      padding: 24px;
+      animation: slideUp 0.25s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .modal-title { font-size: 17px; font-weight: 800; }
+    .modal-close {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text2);
+    }
+    .btn-save {
+      width: 100%;
+      background: var(--green);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+      margin-top: 4px;
+    }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--text);
+      color: var(--surface);
+      padding: 10px 22px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 999;
+      transition: transform 0.3s;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .empty { text-align: center; padding: 40px; color: var(--text3); }
+    .empty .icon { font-size: 40px; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="back-btn">← رجوع</a>
+  <div class="nav-title">🛍 المنتجات</div>
+  <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+</nav>
+
+<div class="main">
+  <!-- Add Product Form -->
+  <div class="add-form">
+    <div class="form-title">➕ إضافة منتج جديد</div>
+    <div class="form-row">
+      <div class="field">
+        <label>اسم المنتج *</label>
+        <input id="newName" type="text" placeholder="مثال: قهوة عربية" />
+      </div>
+      <div class="field">
+        <label>السعر (د.ع) *</label>
+        <input id="newPrice" type="number" placeholder="مثال: 2500" min="0" />
+      </div>
+    </div>
+    <div class="field">
+      <label>الفئة</label>
+      <input id="newCat" type="text" placeholder="مثال: مشروبات ساخنة" list="catList" />
+      <datalist id="catList"></datalist>
+    </div>
+    <button class="btn-add" onclick="addProduct()">➕ إضافة المنتج</button>
+  </div>
+
+  <!-- Products List -->
+  <div class="prod-header">
+    <div class="prod-header-title">قائمة المنتجات</div>
+    <div class="prod-count" id="prodCount">0 منتج</div>
+  </div>
+  <input class="search-bar" id="searchBar" placeholder="🔍 بحث..." oninput="renderFiltered()" />
+  <div id="prodList">
+    <div class="empty"><div class="icon">📦</div><div>جاري التحميل...</div></div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="overlay" id="editOverlay" onclick="closeOnOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">✏️ تعديل المنتج</div>
+      <button class="modal-close" onclick="closeEdit()">✕</button>
+    </div>
+    <div class="field">
+      <label>اسم المنتج</label>
+      <input id="editName" type="text" />
+    </div>
+    <div class="field">
+      <label>السعر (د.ع)</label>
+      <input id="editPrice" type="number" min="0" />
+    </div>
+    <div class="field">
+      <label>الفئة</label>
+      <input id="editCat" type="text" list="catList" />
+    </div>
+    <button class="btn-save" onclick="saveEdit()">💾 حفظ التعديلات</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue, set, remove, push } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC7EVNCSl48CQgIC-a8wdC5UG2tKLtNKjQ",
+    authDomain: "garag-system.firebaseapp.com",
+    databaseURL: "https://garag-system-default-rtdb.firebaseio.com",
+    projectId: "garag-system",
+    storageBucket: "garag-system.firebasestorage.app",
+    messagingSenderId: "330947022055",
+    appId: "1:330947022055:web:d0c9d378e200c7de45a642"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    document.getElementById('themeBtn').textContent = t === 'dark' ? '☀️' : '🌙';
+  }
+  window.toggleTheme = function() {
+    const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('cs_theme', cur);
+    applyTheme(cur);
+  };
+  applyTheme(localStorage.getItem('cs_theme') || 'light');
+
+  let products = [];
+  let editingId = null;
+
+  onValue(ref(db, 'coffeepos/products'), snap => {
+    products = [];
+    if (snap.exists()) {
+      Object.entries(snap.val()).forEach(([id, p]) => products.push({ id, ...p }));
+    }
+    // Update datalist
+    const cats = [...new Set(products.map(p => p.category).filter(Boolean))];
+    document.getElementById('catList').innerHTML = cats.map(c => `<option value="${c}">`).join('');
+    renderFiltered();
+  });
+
+  window.renderFiltered = function() {
+    const q = document.getElementById('searchBar').value.toLowerCase();
+    const filtered = products.filter(p => p.name.toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q));
+    renderProducts(filtered);
+  };
+
+  function renderProducts(list) {
+    document.getElementById('prodCount').textContent = `${products.length} منتج`;
+    const container = document.getElementById('prodList');
+    if (list.length === 0) {
+      container.innerHTML = `<div class="empty"><div class="icon">📦</div><div>لا توجد منتجات</div></div>`;
+      return;
+    }
+    const bycat = {};
+    list.forEach(p => {
+      const cat = p.category || 'عام';
+      if (!bycat[cat]) bycat[cat] = [];
+      bycat[cat].push(p);
+    });
+    let html = '';
+    Object.entries(bycat).forEach(([cat, items]) => {
+      html += `<div class="cat-section">
+        <div class="cat-title">📁 ${cat} (${items.length})</div>`;
+      items.forEach(p => {
+        html += `<div class="prod-card">
+          <div class="prod-icon">☕</div>
+          <div class="prod-info">
+            <div class="prod-name">${p.name}</div>
+            <div class="prod-meta">${p.category || 'بدون فئة'}</div>
+          </div>
+          <div class="prod-price-badge">${p.price.toLocaleString('ar-IQ')} د.ع</div>
+          <div class="prod-actions">
+            <button class="edit-btn" onclick="openEdit('${p.id}')">✏️</button>
+            <button class="del-btn" onclick="deleteProduct('${p.id}', '${p.name}')">🗑</button>
+          </div>
+        </div>`;
+      });
+      html += `</div>`;
+    });
+    container.innerHTML = html;
+  }
+
+  window.addProduct = async function() {
+    const name = document.getElementById('newName').value.trim();
+    const price = parseInt(document.getElementById('newPrice').value);
+    const cat = document.getElementById('newCat').value.trim();
+    if (!name) { showToast('❌ أدخل اسم المنتج'); return; }
+    if (!price || price <= 0) { showToast('❌ أدخل سعرًا صحيحًا'); return; }
+    const newRef = push(ref(db, 'coffeepos/products'));
+    await set(newRef, { name, price, category: cat || 'عام', createdAt: Date.now() });
+    document.getElementById('newName').value = '';
+    document.getElementById('newPrice').value = '';
+    document.getElementById('newCat').value = '';
+    showToast(`✅ تم إضافة ${name}`);
+  };
+
+  window.openEdit = function(id) {
+    const p = products.find(x => x.id === id);
+    if (!p) return;
+    editingId = id;
+    document.getElementById('editName').value = p.name;
+    document.getElementById('editPrice').value = p.price;
+    document.getElementById('editCat').value = p.category || '';
+    document.getElementById('editOverlay').classList.add('open');
+  };
+
+  window.closeEdit = function() {
+    document.getElementById('editOverlay').classList.remove('open');
+    editingId = null;
+  };
+  window.closeOnOverlay = function(e) {
+    if (e.target === document.getElementById('editOverlay')) closeEdit();
+  };
+
+  window.saveEdit = async function() {
+    if (!editingId) return;
+    const name = document.getElementById('editName').value.trim();
+    const price = parseInt(document.getElementById('editPrice').value);
+    const cat = document.getElementById('editCat').value.trim();
+    if (!name || !price || price <= 0) { showToast('❌ تحقق من البيانات'); return; }
+    await set(ref(db, `coffeepos/products/${editingId}`), { name, price, category: cat || 'عام' });
+    closeEdit();
+    showToast('✅ تم حفظ التعديلات');
+  };
+
+  window.deleteProduct = async function(id, name) {
+    if (!confirm(`هل تريد حذف "${name}"؟`)) return;
+    await remove(ref(db, `coffeepos/products/${id}`));
+    showToast(`🗑 تم حذف ${name}`);
+  };
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+</script>
+</body>
+</html>
